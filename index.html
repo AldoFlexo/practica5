@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evidencia 5</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+
+<body style="background-color: lightslategray;">
+
+
+    <div class="p-3 mb-2 bg-dark text-white">
+        <h1>EVIDENCIA 5</h1>
+    </div>
+    <div>
+        <label for="ID" class="fw-light">ID: </label>
+        <input type="number" name="ED" id="ID">
+        <button class="btn btn-success" id="search">BUSCAR</button>
+        <hr>
+    </div>
+
+    <div>
+        <label for="title" class="fw-light">Title: </label>
+        <input type="text" name="title" id="title">
+        <label for="complete" class="fw-light">Completed: </label>
+        <input type="text" name="title" id="complete">
+        <hr>
+    </div>
+
+    <table class="table table-success table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Phone</th>
+                <th scope="col">website</th>
+            </tr>
+        </thead>
+        <tbody id="tabla"></tbody>
+    </table>
+
+    <div>
+        <button class="btn btn-warning" id="clean">Limpiar</button>
+    </div>
+</body>
+
+<script>
+
+    //BUSCAR
+    document.getElementById("search").addEventListener("click", async () => {
+        if (document.getElementById('ID').value <= 0 || document.getElementById('ID').value >= 201) {
+            alert("Error, los parametros enviados no cumplen con lo establecido, vuelve a intentar");
+        }
+        else {
+            if (await titlefuncion() === true) {
+                funcionUsers();
+                if (document.getElementById('ID').value > 10) {
+                    alert("Usuarios no encontrados, la tabla no será mostrada")
+                }
+                else {
+                    alert("Datos encontrados")
+                }
+            }
+            else {
+                alert("Error, vuelve a intentarlo")
+            }
+        }
+    });
+
+    //Borrar
+    document.getElementById("clean").addEventListener("click", async () => {
+        alert("Datos eliminados")
+        document.getElementById("title").value = "";
+        document.getElementById("complete").value = "";
+        document.getElementById("fila").remove();
+    });
+
+    //Funcion de title y completed
+    const titlefuncion = async () => {
+
+        let ED = document.getElementById('ID').value;
+
+        try {
+
+            await axios({
+                method: 'GET',
+                url: 'https://jsonplaceholder.typicode.com/todos'
+            })
+                .then(res => {
+                    for (vuelta of res.data) {
+                        console.log(res.data);
+                        if (ED == vuelta.id) {
+                            document.getElementById('title').value = vuelta.title;
+                            document.getElementById('complete').value = vuelta.completed;
+                        }
+                    }
+                })
+            return true;
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
+    //Funcion de datos de usuarios en tabla
+    const funcionUsers = async () => {
+        let ED = document.getElementById('ID').value;
+        try {
+            axios({
+                method: 'GET',
+                url: 'https://jsonplaceholder.typicode.com/users'
+            })
+                .then(res => {
+                    for (vuelta of res.data) {
+                        console.log(res.data);
+                        if (ED == vuelta.id) {
+                            tabla.innerHTML += `
+                        <tr id="fila">
+                            <td>${vuelta.name}</td>
+                            <td>${vuelta.email}</td>
+                            <td>${vuelta.phone}</td>
+                            <td>${vuelta.website}</td>
+                        </tr>
+                    `
+                        }
+                    }
+                })
+            return true;
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
+
+
+
+
+</script>
+
+</html>
